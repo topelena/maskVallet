@@ -58,7 +58,7 @@ export class AppComponent implements OnInit {
   //   }
   // }
   ngOnInit() {
-    this.price = "0x00"
+    //this.price = "0x00"
     window.addEventListener('load', async () => {
       // Modern dapp browsers...
       this.b = this.a.ethereum
@@ -70,29 +70,31 @@ export class AppComponent implements OnInit {
           const accounts = await this.b.enable();
           this.account = accounts[0]
           console.log(this.account)
+          this.message = 'You are logged with MetaMask';
+
           // Acccounts now exposed
           //this.pay(this.transactionParameters, this.b.selectedAddress, this.price)
-          this.c.eth.sendTransaction({
-            from: this.account,
-            to: "0x0000000000000000000000000000000000000000",
-            value: "0x00",
+          // this.c.eth.sendTransaction({
+          //   from: this.account,
+          //   to: "0x0000000000000000000000000000000000000000",
+          //   value: "0x00",
 
-          });
+          // });
         } catch (error) {
           // User denied account access...
         }
       }
       // Legacy dapp browsers...
-      else if (this.c) {
-        this.c = new Web3(this.c.currentProvider);
-        // Acccounts always exposed
-        this.c.eth.sendTransaction({
-          from: this.account,
-          to: "0x0000000000000000000000000000000000000000",
-          // value: "0x00",
-          value: this.c.utils(1, "ether"),
-        });
-      }
+      // else if (this.c) {
+      //   this.c = new Web3(this.c.currentProvider);
+      //   // Acccounts always exposed
+      //   this.c.eth.sendTransaction({
+      //     from: this.account,
+      //     to: "0x0000000000000000000000000000000000000000",
+      //     // value: "0x00",
+      //     value: this.c.utils(1, "ether"),
+      //   });
+      // }
       // Non-dapp browsers...
       else {
         console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
@@ -101,18 +103,48 @@ export class AppComponent implements OnInit {
   }
 
 
+  async pay() {
+    this.price = "0x00"
+    this.b = this.a.ethereum
+    if (this.b) {
+      this.c = this.a.web3
+      this.c = new Web3(this.b);
+      try {
+        // Request account access if needed
+        const accounts = await this.b.enable();
+        this.account = accounts[0]
+        console.log(this.account)
+        // Acccounts now exposed
+        //this.pay(this.transactionParameters, this.b.selectedAddress, this.price)
+        this.c.eth.sendTransaction({
+          from: this.account,
+          to: "0x0000000000000000000000000000000000000000",
+          value: this.price,
+
+        });
+      } catch (error) {
+        // User denied account access...
+      }
+    }
+    // Legacy dapp browsers...
+    else if (this.c) {
+      this.c = new Web3(this.c.currentProvider);
+      // Acccounts always exposed
+      this.c.eth.sendTransaction({
+        from: this.account,
+        to: "0x0000000000000000000000000000000000000000",
+        // value: "0x00",
+        value: this.c.utils(1, "ether"),
+      });
+    }
+    // Non-dapp browsers...
+    else {
+      this.message = 'Non-Ethereum browser detected. You should consider trying MetaMask!';
+    }
+
+  }
 
 
-  // pay(parameters, user, price) {
-  //   console.log(user)
-  //   this.transactionParameters.value = price;
-  //   this.b.sendAsync({
-  //     method: 'eth_sendTransaction',
-  //     params: parameters,
-  //     from: user,
-  //   }, this.afterPayed())
-  // }
-  // afterPayed() { this.message = "Payment was maid" }
 }
 
 
